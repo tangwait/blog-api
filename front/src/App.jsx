@@ -1,22 +1,21 @@
-import { useEffect, useState } from "react";
-import './App.css'
+import { Routes, Route, Link } from "react-router-dom";
+import Register from "./Register";
+import Home from "./Home";
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    fetch("/api/")
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error(err));
-  }, []);
-
   return (
     <div>
-      <h1>Frontend Connected to Backend</h1>
-      <p>Response from backend: {message}</p>
+      <nav>
+        <Link to="/">Home</Link> | <Link to="/register">Register</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }
 
-export default App
+export default App;
