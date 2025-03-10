@@ -26,5 +26,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', router);
+app.use('/api', router);
 
 app.listen(3000, () => console.log('Backend running on port 3000'));
