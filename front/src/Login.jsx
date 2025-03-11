@@ -7,7 +7,7 @@ function Login() {
           <input type="email" placeholder="Enter your email" />
           <label>Password: </label>
           <input type="password" placeholder="Enter your password" />
-          <button type="submit">Register</button>
+          <button type="submit">Log In</button>
         </form>
       </div>
     );
