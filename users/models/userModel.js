@@ -6,6 +6,13 @@ async function createUser(email, hashedPassword) {
     })    
 }
 
+async function findUserEmail(email) {
+    return await prisma.user.findUnique({
+        where: { email }
+    });
+}
+
 module.exports = {
-    createUser
+    createUser,
+    findUserEmail
 }
