@@ -15,7 +15,17 @@ datasource db {
 
 model User {
   id       String  @id @default(uuid())
+  username String  @unique
   email    String  @unique
   password String
   createdAt DateTime @default(now())
+  
+  Post Post[]
+}
+
+model Post {
+  id        String    @id
+  user      User      @relation(fields: [id], references: [id], onDelete: Cascade)
+  postText  String 
+  postTime  DateTime  @default(now())
 }
