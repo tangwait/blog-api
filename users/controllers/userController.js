@@ -13,17 +13,13 @@ async function registerUser(req, res) {
         const { email, password, username } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await prismaFunction.createUser(email, hashedPassword, username);
+        const { user, token } = await prismaFunction.createUser(email, hashedPassword, username);
         console.log(user);
 
-        res.json({
-            message: "User registered",
-            user: { 
-                id: user.id, 
-                email: user.email, 
-                createdAt: user.createdAt,
-                username: user.username
-            },
+        return res.status(201).json({
+            message: 'User created successfully',
+            user: user,
+            token: token,
         });
     } catch (error) {
         console.error("Cannot register user:", error);
@@ -33,34 +29,30 @@ async function registerUser(req, res) {
 
 async function loginUser(req, res) {
     try {
-        passport.authenticate('local', (err, user, info) => {
-            if (err) { 
-            console.error('Error during authentication:', err);
-            return next(err);
-            }
+        const { email, password } = req.body;
 
-            if (!user) {
-                return res.status(401).json({ error: 'Invalid email or password' });
-            }
+        const user = await prismaFunction.findUserEmail(email);
 
-            req.LogIn(user, (loginError) => {
-                if (loginError) {
-                    console.error('Login failed:', loginError);
-                    return next(loginError);
-                }
-            })
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+        const JWT_SECRET = process.env.JWT_SECRET;
 
-            const token = jwt.sign(
-                { userId: user._id },
-                dogs,
-                { expiresIn: '5h'}
-            );
+        const token = jwt.sign(
+            { userId: user.id },
+            JWT_SECRET,
+            { expiresIn: '5h'}
+         );
 
-            return res.status(200).json({
-                message: 'Login successful',
-                token: token
-            });
-        }) (req, res, next);
+        return res.status(200).json({
+            message: 'Login successful',
+            token: token
+        });
     } catch (error) {
         console.error("Can't login:", error);
         res.status(500).json({ error: "Can't login user"});

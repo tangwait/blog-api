@@ -3,11 +3,17 @@ import { useEffect, useState } from "react";
 function Dashboard() {
     const [ posts, setPosts ] = useState([]);
     useEffect(() => {
-        fetch("/api/posts")
+        fetch("/api/posts", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem('token')}`,
+            },
+        })
           .then((res) => res.json())
           .then((data) => setPosts(data.data))
           .catch((err) => console.error(err));
     }, []);
+    
     return (
         <div>
             <h1>Blog Posts:</h1>
