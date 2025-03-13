@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 
 function Register() {
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [redirect, setRedirect] = useState(false);
@@ -14,7 +15,7 @@ function Register() {
             const response = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({ email, password, })
+                body: JSON.stringify({ email, password, username })
             });
 
             const data = await response.json();
@@ -46,6 +47,13 @@ function Register() {
             value={email} 
             placeholder="Enter your email"
             onChange={(e) => setEmail(e.target.value)} 
+            required/>
+          <label>Username: </label>
+          <input 
+            type="username" 
+            value={username} 
+            placeholder="Enter your username"
+            onChange={(e) => setUsername(e.target.value)} 
             required/>
           <label>Password: </label>
           <input 

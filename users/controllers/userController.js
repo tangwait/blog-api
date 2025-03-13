@@ -10,15 +10,20 @@ function loadIndex(req, res) {
 
 async function registerUser(req, res) {
     try {
-        const { email, password } = req.body;
+        const { email, password, username } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await prismaFunction.createUser(email, hashedPassword);
+        const user = await prismaFunction.createUser(email, hashedPassword, username);
         console.log(user);
 
         res.json({
             message: "User registered",
-            user: { id: user.id, email: user.email, createdAt: user.createdAt},
+            user: { 
+                id: user.id, 
+                email: user.email, 
+                createdAt: user.createdAt,
+                username: user.username
+            },
         });
     } catch (error) {
         console.error("Cannot register user:", error);
