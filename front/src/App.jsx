@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";  
 import { useState, useEffect } from "react";
-import Navbar from "./Navbar";
-import Home from "./Home";
-import Login from "./Login";
-import Register from "./Register";
-import Profile from "./Profile";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,15 +15,15 @@ function App() {
     }, []);
 
     return (
-        <Router>
-            <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={isAuthenticated ? <Navigate to="/profile" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
-                <Route path="/register" element={isAuthenticated ? <Navigate to="/profile" /> : <Register setIsAuthenticated={setIsAuthenticated} />} />
-                <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
-            </Routes>
-        </Router>
+        <>
+        <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+        <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
+            <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register setIsAuthenticated={setIsAuthenticated} />} />
+            <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+        </Routes>
+        </>
     );
 }
 
