@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 function Dashboard() {
-    const [ posts, setPosts ] = useState([]);
-    const [ user, setUser ] = useState(null);
+    const [posts, setPosts] = useState([]);
+    const [user, setUser] = useState({});
     useEffect(() => {
         fetch("/api/posts", {
             method: "GET",
@@ -42,7 +42,7 @@ function Dashboard() {
     
     return (
         <div>
-            <h1>Welcome back {user.username} </h1>
+            <h1>Welcome back {user ? user.username : "Loading..."}</h1>
             <h2>Blog Posts:</h2>
             {posts.length > 0 ? (
                 posts.map((post) => (
