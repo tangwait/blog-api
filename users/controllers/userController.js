@@ -59,8 +59,42 @@ async function loginUser(req, res) {
     }
 }
 
+
+async function getUserInfo(req, res) {
+    console.log("Headers received:", req.headers);
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Unauthorized: No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    console.log("Extracted Token:", token);
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.userId;
+        console.log("Decoded Token: ", decoded);
+
+        if (!userId) {
+            return res.status(400).json({ error: "Invalid token: Missing userId" });
+        }
+
+        const user = await prismaFunction.findUserId(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({ token, data: user });
+    } catch (error) {
+        res.status(403).json({ error: "Invalid or expired token" });
+    }
+}
+
+
 module.exports = {
     loadIndex,
     registerUser,
-    loginUser
+    loginUser,
+    getUserInfo
 }

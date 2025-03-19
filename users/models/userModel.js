@@ -27,7 +27,24 @@ async function findUserEmail(email) {
     });
 }
 
+async function findUserId(userId) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+              id: userId,
+            },
+          });
+          
+        return user;
+    } catch (error) {
+        console.error("Error finding user:", error);
+        throw new Error("Database error");
+    }
+}
+
+
 module.exports = {
     createUser,
-    findUserEmail
+    findUserEmail,
+    findUserId
 }

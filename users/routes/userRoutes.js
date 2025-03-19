@@ -13,5 +13,6 @@ router.post('/login', userController.loginUser);
 router.get('/posts', authenticationToken, postController.loadPosts);
 router.post("/posts", postController.createPost);
 
+router.get("/user-info", authenticationToken, userController.getUserInfo);
 
 module.exports = router;
