@@ -85,7 +85,7 @@ async function getUserInfo(req, res) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        res.json({ token, data: user });
+        res.json({ data: user });
     } catch (error) {
         res.status(403).json({ error: "Invalid or expired token" });
     }

@@ -1,21 +1,47 @@
 const prisma = require("../prisma");
 
 async function getPosts() {
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+        where: { published: true, },
+        include: { user: true },
+        orderBy: { postTime: "desc" }
+    });
     return posts;
 }
 
-async function createPost(user, postText) {
+async function createPost(userId, postText) {
     return await prisma.post.create({
         data: {
-            user,
+            userId,
             postText,
-            postTime: new Date()
+            published: true,
+        }
+    });
+}
+
+async function getDrafts(userId) {
+    return await prisma.post.findMany({
+        where: {
+            userId: userId,
+            published: false,
+
+        }
+    })    
+}
+
+async function saveDraft(userId, postText) {
+    return await prisma.post.create({
+        data: {
+            userId,
+            postText,
+            published: false,
         }
     });
 }
 
 module.exports = {
     getPosts,
-    createPost
+    createPost,
+    getDrafts,
+    saveDraft
 }

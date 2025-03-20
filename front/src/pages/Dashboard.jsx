@@ -11,7 +11,7 @@ function Dashboard() {
             },
         })
           .then((res) => res.json())
-          .then((data) => setPosts(data.data))
+          .then((data) => setPosts(data?.data || data))
           .catch((err) => console.error(err));
     }, []);
     useEffect(() => {
@@ -47,7 +47,7 @@ function Dashboard() {
             {posts.length > 0 ? (
                 posts.map((post) => (
                     <div key={post.id}>
-                        <h3>{post.user}</h3>
+                        <h3>{post.user ? post.user.username : "Unknown Author"}</h3>
                         <p>{post.postText}</p>
                         <small>{new Date(post.postTime).toLocaleString()}</small>
                         <hr />

@@ -18,9 +18,10 @@ model User {
 }
 
 model Post {
-  id       String   @id
-  postText String
-  postTime DateTime @default(now())
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id
+  postText  String
+  postTime  DateTime @default(now())
+  userId    String
+  published Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
