@@ -1,54 +1,27 @@
-import { useEffect, useState } from "react";
+import { useFetchData } from "../hooks/useFetch";
 
 function Drafts() {
-    const [user, setUser] = useState({});
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        console.log("Token:", token);
-
-        fetch("/api/user-info", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`,
-            },
-        })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Failed to fetch user info');
-            }
-            return res.json();
-        })
-        .then((userData) => {
-            console.log("User data:", userData); 
-            setUser(userData.data); 
-        })
-        .catch((err) => {
-            console.error(err);
-        });
-    }, []);
+    const { data: drafts, error: draftsError } = useFetchData("/api/drafts", []);
     return (
         <>
         <h1>Drafts:</h1>
-            <li>
-                <ul>
-                    <div>
-                        {drafts.length > 0 ? (
-                            drafts.map((draft) => (
-                                <div key={draft.id}>
-                                    <h3>{draft.user}</h3>
-                                    <p>{draft.postText}</p>
-                                    <small>{new Date(draft.postTime).toLocaleString()}</small>
-                                    <hr/>
-                                </div>
-                            ))
-                        ) : (
-                        <p>No posts available</p>
-                        )}
-                    </div>
-                </ul>
-            </li>
+        if (draftsError) return <p>Error fetching drafts: {draftsError.message}</p>;
+            <div>
+                {drafts?.length > 0 ? (
+                    drafts.map((draft) => (
+                        <div key={draft.id}>
+                            <h3>{draft.user?.username || "Unknown User"}</h3>
+                            <p>{draft.postText}</p>
+                            <small>{new Date(draft.postTime).toLocaleString()}</small>
+                            <hr/>
+                        </div>
+                    ))
+                ) : (
+                <p>No posts available</p>
+                )}
+            </div>
         </>
     )
 }
 
-export default CreatePost;
+export default Drafts;

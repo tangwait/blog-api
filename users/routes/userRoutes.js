@@ -15,4 +15,7 @@ router.post("/posts", postController.createPost);
 
 router.get("/user-info", authenticationToken, userController.getUserInfo);
 
+
+router.get("/drafts", postController.loadUserDrafts);
+router.post("/drafts", postController.saveUserDraft);
 module.exports = router;

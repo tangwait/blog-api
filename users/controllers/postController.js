@@ -56,7 +56,13 @@ async function createPost(req, res) {
     }
 }
 
+async function saveUserDraft(postId) {
+    
+}
+
 module.exports = {
     loadPosts,
-    createPost
+    createPost,
+    loadUserDrafts,
+    saveUserDraft,
 }
