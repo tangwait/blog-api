@@ -2,10 +2,11 @@ import { useFetchData } from "../hooks/useFetch";
 
 function Drafts() {
     const { data: drafts, error: draftsError } = useFetchData("/api/drafts", []);
+    
+    if (draftsError) return <p>Error fetching drafts: {draftsError.message}</p>;
     return (
         <>
         <h1>Drafts:</h1>
-        if (draftsError) return <p>Error fetching drafts: {draftsError.message}</p>;
             <div>
                 {drafts?.length > 0 ? (
                     drafts.map((draft) => (

@@ -1,50 +1,17 @@
-import { useEffect, useState } from "react";
+import { useFetchData } from "../hooks/useFetch";
 
 function Dashboard() {
-    const [posts, setPosts] = useState([]);
-    const [user, setUser] = useState({});
-    useEffect(() => {
-        fetch("/api/posts", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`,
-            },
-        })
-          .then((res) => res.json())
-          .then((data) => setPosts(data?.data || data))
-          .catch((err) => console.error(err));
-    }, []);
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        console.log("Token:", token);
+    const { data: user, error: userError } = useFetchData("/api/user-info", {})
+    const { data: posts, error: postsError } = useFetchData("/api/posts", [])
+    
+    if (userError) return <p>Error fetching user info: {userError.message}</p>;
+    if (postsError) return <p>Error fetching posts: {postsError.message}</p>;
 
-        fetch("/api/user-info", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`,
-            },
-        })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Failed to fetch user info');
-            }
-            return res.json();
-        })
-        .then((userData) => {
-            console.log("User data:", userData); 
-            setUser(userData.data); 
-        })
-        .catch((err) => {
-            console.error(err);
-        });
-    }, []);
-    
-    
     return (
         <div>
-            <h1>Welcome back {user ? user.username : "Loading..."}</h1>
+            <h1>Welcome back {user?.username ?? "Loading..."}</h1>
             <h2>Blog Posts:</h2>
-            {posts.length > 0 ? (
+            {Array.isArray(posts) && posts.length > 0 ? (
                 posts.map((post) => (
                     <div key={post.id}>
                         <h3>{post.user ? post.user.username : "Unknown Author"}</h3>

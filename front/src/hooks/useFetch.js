@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { getToken } from "../utils/auth";
 
 export function useFetchData(url, initialState = null) {
     const [data, setData] = useState(initialState);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         if (!token) {
             setError("No token found");
             return;
@@ -14,7 +15,7 @@ export function useFetchData(url, initialState = null) {
         fetch(url, {
             method: "GET",
             headers: {
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `Bearer ${getToken()}`,
             },
         })
         .then((res) => {

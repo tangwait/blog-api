@@ -39,9 +39,19 @@ async function saveDraft(userId, postText) {
     });
 }
 
+async function publish(postId) {
+    return await prisma.post.update({
+        data: {
+            postId,
+            published: true
+        }
+    })    
+}
+
 module.exports = {
     getPosts,
     createPost,
     getDrafts,
-    saveDraft
+    saveDraft,
+    publish
 }
