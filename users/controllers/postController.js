@@ -56,8 +56,33 @@ async function createPost(req, res) {
     }
 }
 
-async function saveUserDraft(postId) {
-    
+async function saveUserDraft(req, res) {
+    try {
+        const { postText } = req.body;
+        const userId = req.user.id;
+
+        const draft = await prismaFunction.saveDraft(userId, postText);
+
+        res.status(201).json({ message: "Draft saved", draft });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to save draft" });
+    }
+}
+
+async function publishDraft(req, res) {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const updatedPost = await prismaFunction.publish(id, userId)
+        if (updatedPost.count === 0) {
+            return res.status(403).json({ error: "Draft not found or unauthorized" });
+        }
+        
+        res.json({ message: "Draft published", updatedPost });
+    }   catch (error) {
+        res.status(500).json({ error: "Failed to publish draft" });
+    } 
 }
 
 module.exports = {
@@ -65,4 +90,5 @@ module.exports = {
     createPost,
     loadUserDrafts,
     saveUserDraft,
+    publishDraft,
 }

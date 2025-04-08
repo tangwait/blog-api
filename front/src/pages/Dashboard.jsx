@@ -3,7 +3,7 @@ import { useFetchData } from "../hooks/useFetch";
 function Dashboard() {
     const { data: user, error: userError } = useFetchData("/api/user-info", {})
     const { data: posts, error: postsError } = useFetchData("/api/posts", [])
-    
+
     if (userError) return <p>Error fetching user info: {userError.message}</p>;
     if (postsError) return <p>Error fetching posts: {postsError.message}</p>;
 
