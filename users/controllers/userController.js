@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const prismaFunction = require("../models/userModel");
-const passport = require('passport');
 require("../passportConfig");
 const jwt = require('jsonwebtoken');
 
@@ -62,7 +61,6 @@ async function loginUser(req, res) {
 
 async function getUserInfo(req, res) {
     console.log("Headers received:", req.headers);
-
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ error: "Unauthorized: No token provided" });

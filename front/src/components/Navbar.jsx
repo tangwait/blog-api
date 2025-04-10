@@ -12,6 +12,7 @@ export default function Navbar({ isAuthenticated, setIsAuthenticated }) {
             {isAuthenticated ? (
                 <>
                     <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/drafts">Drafts</Link>
                     <button onClick={handleLogout}>Logout</button>
                 </>
             ) : (

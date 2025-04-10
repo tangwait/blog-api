@@ -1,4 +1,5 @@
 const prismaFunction = require("../models/postModel");
+const jwt = require('jsonwebtoken');
 
 async function loadPosts(req, res) {
     try {
@@ -20,21 +21,22 @@ async function loadUserDrafts(req, res) {
     }
 
     const token = authHeader.split(" ")[1];
-   
+    console.log("Extracted Token:", token);
+    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.userId;
         console.log("Decoded Token: ", decoded);
 
+
         if (!userId) {
             return res.status(400).json({ error: "Invalid token: Missing userId" });
         }
-
-        const drafts = await prismaFunction.getDrafts(userId);
-
+        const drafts = await prismaFunction.getDrafts(userId)
         res.json({ data: drafts });
 
     } catch (error) {
+        console.log("JWT Error:", error);
         res.status(403).json({ error: "Invalid or expired token" });
     }
 }
@@ -43,11 +45,14 @@ async function loadUserDrafts(req, res) {
 async function createPost(req, res) {
     try {
         const { user, postText } = req.body;
+        
         if (!user || !postText) {
             return res.status(400).json({ error: "User and postText are required" });
         }
 
-        const post = await prismaFunction.createPost(user, postText);
+        console.log("Creating post with:", { user, postText });
+
+        const post = await prismaFunction.saveDraft(user, postText);
         res.json({ message: "Post created successfully", post });
 
     } catch (error) {
@@ -58,8 +63,12 @@ async function createPost(req, res) {
 
 async function saveUserDraft(req, res) {
     try {
+        console.log("Decoded req.user:", req.user);
+        console.log("Type of req.user:", typeof req.user);
+        console.log("req.user.userId:", req.user.userId);
+        
         const { postText } = req.body;
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const draft = await prismaFunction.saveDraft(userId, postText);
 
@@ -72,7 +81,7 @@ async function saveUserDraft(req, res) {
 async function publishDraft(req, res) {
     try {
         const { id } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         const updatedPost = await prismaFunction.publish(id, userId)
         if (updatedPost.count === 0) {

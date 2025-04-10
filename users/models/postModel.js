@@ -36,8 +36,10 @@ async function saveDraft(userId, postText) {
             postText,
             published: false,
         }
-    });
+    });    
 }
+
+
 
 async function publish(id, userId) {
     return await prisma.post.updateMany({
@@ -48,6 +50,15 @@ async function publish(id, userId) {
         },
         data: { published: true }
     })    
+}
+
+async function publishPost(id, text) {
+    return await prisma.post.updateMany({
+        where: {
+            id: parseInt(id),
+        }
+
+    })
 }
 
 module.exports = {
