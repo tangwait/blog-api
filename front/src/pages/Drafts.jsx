@@ -2,74 +2,43 @@ import { useState } from "react";
 import { useFetchData } from "../hooks/useFetch";
 
 function Drafts() {
-    const { data: drafts, setData, error: draftsError, request } = useFetchData("/api/drafts", []);
+    const { data: response, setData, error: draftsError, request } = useFetchData("/api/drafts", []);
+    const drafts = response?.data || [];    
     const [newDraftText, setNewDraftText] = useState("");
 
     console.log("Drafts data:", drafts);
 
-    async function saveDraft(id, updatedContent = newDraftText) {
+    async function saveDraft(id, content, isPublishing = false) {
         try {
+            const payload = {
+                postText: content,
+                published: isPublishing
+            };
+    
             let result;
-    
             if (id === "new") {
-                console.log("Creating new draft...");
-                result = await request("POST", "/api/drafts", {
-                    postText: updatedContent,
-                });
+                result = await request("POST", "/api/drafts", payload);
             } else {
-                console.log(`Updating draft with id ${id}...`);
-                result = await request("PUT", `/api/drafts/${id}`, {
-                    postText: updatedContent,
-                });
+                result = await request("PUT", `/api/drafts/${id}`, payload);
             }
-    
-            console.log("Save draft result:", result);
     
             setData((prev) => {
                 const prevData = Array.isArray(prev) ? prev : [];
-                
-                console.log("Prev Data:", prevData);  
                 const newData = prevData.some((draft) => draft.id === result.draft.id)
-                    ? prevData.map((d) =>
-                          d.id === result.draft.id ? result.draft : d
-                      )
+                    ? prevData.map((d) => d.id === result.draft.id ? result.draft : d)
                     : [result.draft, ...prevData];
-            
-                console.log("Updated Data:", newData);  
-                
                 return newData;
             });
+    
+            if (isPublishing) {
+                setData((prev) => prev.filter((draft) => draft.id !== result.draft.id));
+            }
+    
             setNewDraftText("");
+            alert(isPublishing ? "Published" : "Draft saved");
         } catch (err) {
-            console.error("Error in saveDraft:", err);
+            console.error("Error saving draft:", err);
             alert(err.message);
-        }
-    }
-    
-    async function publishDraft(id) {    
-        try {
-            const token = localStorage.getItem("token");
-            if (id === "new") {
-                await fetch("/api/posts", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ postText: newDraftText, published: true }),
-                });
-                
-            } else {
-                await request("PUT", `/api/drafts/${id}/publish`);
-            }
-    
-            if (id !== "new") {
-                setData((prev) => prev.filter((draft) => draft.id !== id));
-            }
-            alert("Published");
-            setNewDraftText("");
-        } catch (error) {
-            alert(error.message);
         }
     }
     
@@ -85,19 +54,19 @@ function Drafts() {
             placeholder="What's on your mind?"
             style={{ width: "100%", marginBottom: "1rem" }}
         />
-        <button onClick={() => saveDraft("new", newDraftText)}>Save as Draft</button>
-        <button onClick={() => publishDraft("new")}>Publish as Post</button>
+        <button onClick={() => saveDraft("new", newDraftText, false)}>Save as Draft</button>
+        <button onClick={() => saveDraft("new", newDraftText, true)}>Publish as Post</button>
+
         <hr />
         
         <h1>Drafts:</h1>
         {drafts?.length ? (
             drafts.map((draft) => (
                 <div key={draft.id}>
-                    <h3>{draft.user ? draft.user.username : "Unknown User"}</h3>
                     <p>{draft.postText}</p>
                     <small>{new Date(draft.postTime).toLocaleString()}</small>
-                    <button onClick={() => saveDraft(draft.id, draft.postText)}>Save Draft</button>
-                    <button onClick={() => publishDraft(draft.id)}>Publish</button>
+                    <button onClick={() => saveDraft(draft.id, draft.postText, false)}>Save Draft</button>
+                    <button onClick={() => saveDraft(draft.id, draft.postText, true)}>Publish</button>
                     <hr />
                 </div>
     ))
