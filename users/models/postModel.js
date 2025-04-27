@@ -9,13 +9,26 @@ async function getPosts() {
     return posts;
 }
 
-async function createPost(userId, postText) {
+async function createDraft(userId, postText, published) {
     return await prisma.post.create({
         data: {
             userId,
             postText,
-            published: true,
-        }
+            published: published,
+            postTime: new Date(),
+        },
+        include: { user: true },
+    });
+}
+
+async function updateDraft(id, postText, published) {
+    return await prisma.post.update({
+        where: { id },
+        data: { 
+            postText,
+            published,
+            postTime: new Date(),
+        },
     });
 }
 
@@ -29,18 +42,6 @@ async function getDrafts(userId) {
     })    
 }
 
-async function saveDraft(userId, postText) {
-    return await prisma.post.create({
-        data: {
-            userId,
-            postText,
-            published: false,
-        }
-    });    
-}
-
-
-
 async function publish(id, userId) {
     return await prisma.post.updateMany({
         where: { 
@@ -52,19 +53,10 @@ async function publish(id, userId) {
     })    
 }
 
-async function publishPost(id, text) {
-    return await prisma.post.updateMany({
-        where: {
-            id: parseInt(id),
-        }
-
-    })
-}
-
 module.exports = {
     getPosts,
-    createPost,
+    createDraft,
+    updateDraft,
     getDrafts,
-    saveDraft,
-    publish
+    publish,
 }
