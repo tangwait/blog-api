@@ -56,8 +56,31 @@ export function useFetchData(url, initialValue = []) {
 
             return result;
         }
+
+    async function refetch() {
+        setLoading(true);
+        try {
+            const token = getToken();
+            const response = await fetch(url, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
     
-    return { data, setData, error, loading, request };
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || "Failed to fetch");
+            }
+    
+            const result = await response.json();
+            setData(result);
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
+    }
+    return { data, setData, error, loading, request, refetch };
 
 }
 

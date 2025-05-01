@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useFetchData } from "../hooks/useFetch";
 
 function Drafts() {
-    const { data: response, setData, error: draftsError, request } = useFetchData("/api/drafts", []);
-    const drafts = response?.data || [];    
+    const { data, setData, error: draftsError, request, refetch } = useFetchData("/api/drafts", { drafts: [] });
+    const drafts = data?.drafts || [];
     const [newDraftText, setNewDraftText] = useState("");
 
     console.log("Drafts data:", drafts);
@@ -22,20 +22,23 @@ function Drafts() {
                 result = await request("PUT", `/api/drafts/${id}`, payload);
             }
     
-            setData((prev) => {
-                const prevData = Array.isArray(prev) ? prev : [];
-                const newData = prevData.some((draft) => draft.id === result.draft.id)
-                    ? prevData.map((d) => d.id === result.draft.id ? result.draft : d)
-                    : [result.draft, ...prevData];
-                return newData;
-            });
-    
             if (isPublishing) {
-                setData((prev) => prev.filter((draft) => draft.id !== result.draft.id));
+                await refetch();
+            } else {
+                setData((prev) => {
+                    if (!prev || !prev.drafts) return prev;
+    
+                    const exists = prev.drafts.some((draft) => draft.id === result.draft.id);
+                    const updatedDrafts = exists
+                        ? prev.drafts.map((d) => (d.id === result.draft.id ? result.draft : d))
+                        : [result.draft, ...prev.drafts];
+    
+                    return { ...prev, drafts: updatedDrafts };
+                });
             }
     
             setNewDraftText("");
-            alert(isPublishing ? "Published" : "Draft saved");
+            alert(isPublishing ? "Published!" : "Draft saved!");
         } catch (err) {
             console.error("Error saving draft:", err);
             alert(err.message);

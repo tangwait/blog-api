@@ -9,7 +9,7 @@ async function getPosts() {
     return posts;
 }
 
-async function createDraft(userId, postText, published) {
+async function saveDraft(userId, postText, published) {
     return await prisma.post.create({
         data: {
             userId,
@@ -26,7 +26,7 @@ async function updateDraft(id, postText, published) {
         where: { id },
         data: { 
             postText,
-            published,
+            published: published,
             postTime: new Date(),
         },
     });
@@ -55,7 +55,7 @@ async function publish(id, userId) {
 
 module.exports = {
     getPosts,
-    createDraft,
+    saveDraft,
     updateDraft,
     getDrafts,
     publish,

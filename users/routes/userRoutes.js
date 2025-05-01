@@ -9,9 +9,7 @@ router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
 router.get("/user-info", authenticateToken, userController.getUserInfo);
 
-router.get('/posts', authenticateToken, postController.loadPosts);
-router.post("/posts", authenticateToken, postController.createPost);
-
+router.get("/posts", authenticateToken, postController.loadPosts);
 
 router.get("/drafts", authenticateToken, postController.loadUserDrafts);
 router.post("/drafts", authenticateToken, postController.saveUserDraft);
