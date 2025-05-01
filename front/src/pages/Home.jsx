@@ -1,12 +1,14 @@
+import { Link } from "react-router-dom";
 
 function Home() {
     return (
-      <div>
-        <h1>Welcome to My App</h1>
-        <p>Login or create an account</p>
-      </div>
+        <div>
+            <h1>Welcome to My App</h1>
+            <p>
+                <Link to="/login">Login</Link> or <Link to="/register">Register</Link>
+            </p>
+        </div>
     );
-  }
-  
-  export default Home;
-  
+}
+
+export default Home;

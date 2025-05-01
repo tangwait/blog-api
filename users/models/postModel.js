@@ -4,7 +4,7 @@ async function getPosts() {
     const posts = await prisma.post.findMany({
         where: { published: true, },
         include: { user: true },
-        orderBy: { postTime: "desc" }
+        orderBy: { postTime: "asc" }
     });
     return posts;
 }
