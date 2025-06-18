@@ -23,6 +23,7 @@ model Post {
   id        String   @id @default(uuid())
   postText  String
   postTime  DateTime @default(now())
+  edited    Boolean  @default(false)
   userId    String
   published Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

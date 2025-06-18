@@ -4,7 +4,7 @@ async function getPosts() {
     const posts = await prisma.post.findMany({
         where: { published: true, },
         include: { user: true },
-        orderBy: { postTime: "asc" }
+        orderBy: { postTime: "desc" }
     });
     return posts;
 }
@@ -32,13 +32,24 @@ async function updateDraft(id, postText, published) {
     });
 }
 
+async function updatePost(id, postText) {
+    return await prisma.post.update({
+        where: { id },
+        data: { 
+            postText,
+            edited: true,
+            postTime: new Date(),
+        },
+    });
+}
+
 async function getDrafts(userId) {
     return await prisma.post.findMany({
         where: {
             userId: userId,
             published: false,
-
-        }
+        },
+        orderBy: { postTime: "desc" }
     })    
 }
 
@@ -57,6 +68,7 @@ module.exports = {
     getPosts,
     saveDraft,
     updateDraft,
+    updatePost,
     getDrafts,
     publish,
 }

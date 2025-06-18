@@ -42,10 +42,22 @@ async function updateDraft(req, res) {
     }
 }
 
+async function updatePost(req, res) {
+    try {
+        const { id } = req.params;
+        const { postText } = req.body;
+
+        const post = await prismaFunction.updatePost(id, postText);
+        
+        res.json({ message: "Post updated", post });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update post" });
+    }
+}
+
 async function loadPosts(req, res) {
     try {
         const posts = await prismaFunction.getPosts();
-
         res.json(posts);
     } catch (error) {
         res.status(500).json({ error: "Failed to load posts" })
@@ -56,5 +68,6 @@ module.exports = {
     loadUserDrafts,
     saveUserDraft,
     updateDraft,
+    updatePost,
     loadPosts,
 };

@@ -10,6 +10,8 @@ router.post('/login', userController.loginUser);
 router.get("/user-info", authenticateToken, userController.getUserInfo);
 
 router.get("/posts", authenticateToken, postController.loadPosts);
+router.put("/posts/:id/", authenticateToken, postController.updatePost);
+
 
 router.get("/drafts", authenticateToken, postController.loadUserDrafts);
 router.post("/drafts", authenticateToken, postController.saveUserDraft);
